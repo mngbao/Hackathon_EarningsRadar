@@ -1,4 +1,5 @@
 // app/components/StockQuote.tsx
+
 import React from 'react';
 
 // Define the structure for the data we expect from our API
@@ -55,7 +56,7 @@ export default async function StockQuote({ tickerSymbol = 'TSLA' }: { tickerSymb
         
         <div className="flex justify-between items-center py-2 border-t border-gray-200">
           <span className="text-xl font-medium text-gray-500">Current Price:</span>
-          <span className={`text-3xl font-extrabold ${data.regularMarketPrice > 0 ? 'text-green-600' : 'text-red-600'}`}>
+           <span className={`text-3xl font-extrabold ${data.regularMarketPrice > 0 ? 'text-green-600' : 'text-red-600'}`}>
             ${data.regularMarketPrice ? data.regularMarketPrice.toFixed(2) : 'N/A'}
           </span>
         </div>

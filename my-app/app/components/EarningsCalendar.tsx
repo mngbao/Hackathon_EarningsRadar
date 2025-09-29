@@ -5,38 +5,52 @@ import { useState, useEffect } from 'react';
 interface Earning {
   symbol: string;
   date: string;
-  estimate: number | null;
-  time: string;
+  epsEstimated: number | null;
+  actual: number | null;
+  revenueEstimated: number | null;
+  revenueActual: number | null;
+}
+
+interface EarningsResponse {
+  dateRange: {
+    from: string;
+    to: string;
+  };
+  count: number;
+  earnings: Earning[];
+  groupedByDate: Record<string, Earning[]>;
 }
 
 const EarningsCalendar = () => {
-  const [earnings, setEarnings] = useState<Earning[]>([]);
+  const [earningsData, setEarningsData] = useState<EarningsResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [daysAhead, setDaysAhead] = useState<number>(7);
+
+  const fetchEarnings = async (days: number) => {
+    try {
+      setLoading(true);
+      const response = await fetch(`/api/earnings?days=${days}`);
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to fetch earnings');
+      }
+      
+      const data: EarningsResponse = await response.json();
+      setEarningsData(data);
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+      console.error('Error fetching earnings:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchEarnings = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch('/api/earnings');
-        
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || 'Failed to fetch earnings');
-        }
-        
-        const data: Earning[] = await response.json();
-        setEarnings(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
-        console.error('Error fetching earnings:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchEarnings();
-  }, []);
+    fetchEarnings(daysAhead);
+  }, [daysAhead]);
 
   if (loading) {
     return (
@@ -55,69 +69,125 @@ const EarningsCalendar = () => {
     );
   }
 
+  if (!earningsData) {
+    return null;
+  }
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { 
+      weekday: 'short', 
+      month: 'short', 
+      day: 'numeric' 
+    });
+  };
+
+  
+
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">
-        Tomorrow's Earnings Calendar
-      </h2>
+    <div className="max-w-6xl mx-auto p-6">
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900">
+            Earnings Calendar
+          </h2>
+          <p className="text-sm text-gray-600 mt-1">
+            {earningsData.count} companies reporting from {formatDate(earningsData.dateRange.from)} to {formatDate(earningsData.dateRange.to)}
+          </p>
+        </div>
+        
+        <div className="flex gap-2">
+          <button
+            onClick={() => setDaysAhead(1)}
+            className={`px-4 py-2 rounded-md text-sm font-medium ${
+              daysAhead === 1
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+            }`}
+          >
+            Tomorrow
+          </button>
+          <button
+            onClick={() => setDaysAhead(7)}
+            className={`px-4 py-2 rounded-md text-sm font-medium ${
+              daysAhead === 7
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+            }`}
+          >
+            Week
+          </button>
+          <button
+            onClick={() => setDaysAhead(30)}
+            className={`px-4 py-2 rounded-md text-sm font-medium ${
+              daysAhead === 30
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+            }`}
+          >
+            Month
+          </button>
+        </div>
+      </div>  
       
-      {earnings.length === 0 ? (
+      {earningsData.count === 0 ? (
         <div className="bg-gray-50 border border-gray-200 rounded-md p-8 text-center">
-          <p className="text-gray-600">No earnings scheduled for tomorrow.</p>
+          <p className="text-gray-600">No earnings scheduled for this period.</p>
         </div>
       ) : (
-        <div className="bg-white shadow-md rounded-lg overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Symbol
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Date
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Time
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  EPS Estimate
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {earnings.map((earning, index) => (
-                <tr key={index} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {earning.symbol}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {earning.date}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                      earning.time === 'BMO' 
-                        ? 'bg-blue-100 text-blue-800' 
-                        : earning.time === 'AMC'
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-gray-100 text-gray-800'
-                    }`}>
-                      {earning.time}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {earning.estimate ? `$${earning.estimate}` : 'N/A'}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="space-y-6">
+            {Object.entries(earningsData.groupedByDate).map(([date, earnings]) => {
+            console.log(earnings)
+            return(
+            <div key={date} style={{ backgroundColor: 'white', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', borderRadius: '8px', overflow: 'hidden' }}>
+              <div style={{ backgroundColor: '#f9fafb', padding: '12px 24px', borderBottom: '1px solid #e5e7eb' }}>
+                <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#111827' }}>
+                  {formatDate(date)}
+                  <span style={{ marginLeft: '8px', fontSize: '14px', fontWeight: '400', color: '#6b7280' }}>
+                    {/* ({earnings.length} {earnings.length === 1 ? 'company' : 'companies'}) */}
+                  </span>
+                </h3>
+              </div>
+              
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr style={{ backgroundColor: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
+                    <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: '500', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                      Symbol
+                    </th>
+                    <th style={{ padding: '12px 24px', textAlign: 'right', fontSize: '12px', fontWeight: '500', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                      EPS Est.
+                    </th>
+                    <th style={{ padding: '12px 24px', textAlign: 'right', fontSize: '12px', fontWeight: '500', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                      Revenue Est.
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {earnings.map((earning: Earning,index:number) => (
+                    <tr key={`${earning.symbol}-${index}`} style={{ borderBottom: '1px solid #e5e7eb' }}>
+                      <td style={{ padding: '16px 24px', fontSize: '14px', fontWeight: '500', color: '#111827' }}>
+                        {earning.symbol}
+                      </td>
+                      <td style={{ padding: '16px 24px', textAlign: 'right', fontSize: '14px', color: '#6b7280' }}>
+                        {earning.epsEstimated !== null && earning.epsEstimated !== undefined 
+                          ? `${earning.epsEstimated.toFixed(2)}` 
+                          : 'N/A'}
+                      </td>
+                      <td style={{ padding: '16px 24px', textAlign: 'right', fontSize: '14px', color: '#6b7280' }}>
+                        {earning.revenueEstimated 
+                          ? `${(earning.revenueEstimated / 1000000000).toFixed(2)}B` 
+                          : 'N/A'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody> 
+              </table>
+            </div>
+          )})}
         </div>
       )}
-      
-      <div className="mt-4 text-sm text-gray-600">
-        <p><strong>BMO:</strong> Before Market Open</p>
-        <p><strong>AMC:</strong> After Market Close</p>
-      </div>
+    
     </div>
   );
 };

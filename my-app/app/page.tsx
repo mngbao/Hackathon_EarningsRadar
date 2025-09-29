@@ -29,9 +29,11 @@ export default async function HomePage() {
         {/* RIGHT COLUMN: Earnings Calendar (Takes up 2/3 of the width) */}
         <div className="lg:col-span-2">
           <EarningsCalendar />
+          
         </div>
 
       </div>
+      
     </main>
   );
 }
