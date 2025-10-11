@@ -2,6 +2,7 @@
 import React from 'react';
 import EarningsCalendar from './components/EarningsCalendar'; // Component from previous step
 import StockQuote from './components/StockQuote'; // New component
+import BuiltinPrompting from './api/prompting';
 
 export default async function HomePage() {
   return (
@@ -15,25 +16,10 @@ export default async function HomePage() {
         </p>
       </header>
 
-      {/* Two-Column Layout (Desktop) / Stacked (Mobile) */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-        
-        {/* LEFT COLUMN: Single Stock Quote */}
         <div className="lg:col-span-1">
-          <StockQuote tickerSymbol="AAPL" />
-          <div className='mt-8 text-center text-sm text-gray-500'>
-             Quickly check a favorite ticker.
-          </div>
-        </div>
-
-        {/* RIGHT COLUMN: Earnings Calendar (Takes up 2/3 of the width) */}
-        <div className="lg:col-span-2">
           <EarningsCalendar />
-          
         </div>
 
-      </div>
-      
     </main>
   );
 }

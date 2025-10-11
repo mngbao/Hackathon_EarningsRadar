@@ -15,7 +15,7 @@ export async function GET(request) {
 
   try {
     // Use the library to fetch real-time quote data
-    const quote = await yahooFinance.quote(ticker.toUpperCase());
+    const quote = await yahooFinance.insights(ticker.toUpperCase());
 
     // Return the fetched data as a JSON response
     return NextResponse.json(quote, { status: 200 });

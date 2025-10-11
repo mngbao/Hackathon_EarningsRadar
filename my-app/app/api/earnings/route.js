@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 
+
 const API_KEY = process.env.FMP_API_KEY;
 const BASE_URL = 'https://financialmodelingprep.com/stable/';
 
@@ -64,11 +65,15 @@ export async function GET(request) {
       revenueActual: item.revenueActual || null
     }));
 
+    const tickerList = simplifiedList.map(item => ({ symbol: item.symbol }));
+
+
     // Group earnings by date for easier frontend rendering
     const groupedByDate = simplifiedList.reduceRight((acc, earning) => {
       if (!acc[earning.date]) {
         acc[earning.date] = [];
       }
+      tickerList.concat(earning.symbol,",")
       acc[earning.date].push(earning);
       return acc;
     }, {});
@@ -80,7 +85,8 @@ export async function GET(request) {
       },
       count: simplifiedList.length,
       earnings: simplifiedList,
-      groupedByDate: groupedByDate
+      groupedByDate: groupedByDate,
+      tickerList,
     });
 
   } catch (error) {
