@@ -24,7 +24,7 @@
     }, []);
 
     useEffect(() => {
-        if (cachedResult || !trigger || !tickers) return;
+        if (cachedResult || !trigger || !tickers ||!promptApiSupported) return;
         if (hasRunRef.current) return; // ✅ prevent double run
         hasRunRef.current = true;
         setStockDescription('');
@@ -63,7 +63,7 @@
         }
         
         handleTickerList();
-    }, [trigger,tickers, cachedResult]);
+    }, [trigger,tickers, cachedResult,onComplete,promptApiSupported]);
     
     if (stockApiError) {
         return <div className="text-red-500">Error: {stockApiError}</div>;

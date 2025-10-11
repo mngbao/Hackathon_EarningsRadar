@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 
-import { Earning, EarningsResponse, TickerList } from '../api/interface';
-import { Alert, Box, Button, Card, CircularProgress, Collapse, Container, CssBaseline, Link, Snackbar } from '@mui/material';
+import { Earning, EarningsResponse } from '../api/interface';
+import { Button} from '@mui/material';
 import StockAnalysis from "./StockAnalysis";
 
 const EarningsCalendar = () => {
@@ -13,7 +13,7 @@ const EarningsCalendar = () => {
   const [daysAhead, setDaysAhead] = useState<number>(4);
   // const [tickerListData, setTickerListData] = useState<String | null>();
   // // const [triggerAnalysis, setTriggerAnalysis] = useState(false);
-  const [promptApiSupported, setPromptApiSupported] = useState<boolean>(true);
+
   // const [stockMap, setStockMap] = useState<StockMap|null>();
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
   const [analysisCache, setAnalysisCache] = useState<Record<string, string>>({});
@@ -226,16 +226,7 @@ const EarningsCalendar = () => {
         </div>
       )}
       <div>
-        {!promptApiSupported &&
-          <Alert
-            severity='error'
-          >Your browser doesn't support the Prompt API. If you're on Chrome, join the <Link href=" https://goo.gle/chrome-ai-dev-preview-join">Early Preview Program</Link> and enable it.</Alert>
-        }
-        {promptApiSupported &&
-          <Alert
-            severity='info'
-          >Be the first to test new AI APIs. Your feedback is invaluable to our development process. Join our <Link href=" https://goo.gle/chrome-ai-dev-preview-join">Early Preview Program</Link> today.</Alert>
-        }
+        
 
       </div>
     </div>

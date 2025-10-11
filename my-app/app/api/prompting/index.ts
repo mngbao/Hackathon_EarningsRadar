@@ -1,4 +1,4 @@
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 declare global {
   interface Window {
       LanguageModel: any;
@@ -30,10 +30,10 @@ export default class BuiltinPrompting {
         // handles the two paths. This method also expects `isBuiltinAiSupported()` to have been
         // called first.
         if (window.LanguageModel && (await window.LanguageModel.availability()) === 'available') {
-            let session = await window.LanguageModel.create();
+            const session = await window.LanguageModel.create();
             return new BuiltinPrompting(session);
         } else if (window.ai.languageModel && (await window.ai.languageModel.capabilities()).available === 'readily') {
-            let session = await window.ai.languageModel.create();
+            const session = await window.ai.languageModel.create();
             return new BuiltinPrompting(session);
         } else {
             throw new Error("Built-in prompting not supported");

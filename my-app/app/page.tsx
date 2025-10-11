@@ -1,8 +1,6 @@
 // app/page.tsx
 import React from 'react';
 import EarningsCalendar from './components/EarningsCalendar'; // Component from previous step
-import StockQuote from './components/StockQuote'; // New component
-import BuiltinPrompting from './api/prompting';
 
 export default async function HomePage() {
   return (
