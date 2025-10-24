@@ -10,7 +10,7 @@ const EarningsCalendar = () => {
   const [earningsData, setEarningsData] = useState<EarningsResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [daysAhead, setDaysAhead] = useState<number>(4);
+  const [daysAhead, setDaysAhead] = useState<number>(7);
   // const [tickerListData, setTickerListData] = useState<String | null>();
   // // const [triggerAnalysis, setTriggerAnalysis] = useState(false);
 

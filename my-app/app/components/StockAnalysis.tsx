@@ -35,7 +35,7 @@
             const name = lookupTickers(tickers)       
             const prompt = `Get the actual company's name of the stock ticker below and analyze it. \
                             ${name}.\
-                            Action: For each stock, analyze 2 bullet point of risks and opportunities.
+                            Action: For each stock, analyze 2 bullet point of risks and oxpportunities for this coming earning.
                             Format: Ticker - Company's name then 2 risks, 2 oppotunities.\
                             Rules: Be concise and short. And use bullet point.`;
             const urlParams = new URLSearchParams(window.location.search);

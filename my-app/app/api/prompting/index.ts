@@ -21,7 +21,7 @@ export default class BuiltinPrompting {
     }
 
     static isBuiltinAiSupported(): boolean {
-        return (window.ai !== undefined && window.ai.languageModel !== undefined) || window.LanguageModel !== undefined;
+        return (window.ai !== undefined && window.ai.languageModel !== undefined ) || window.LanguageModel !== undefined; 
     }
 
     static async createPrompting(): Promise<BuiltinPrompting> {
